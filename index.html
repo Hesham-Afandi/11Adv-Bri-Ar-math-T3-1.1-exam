@@ -118,7 +118,7 @@ body { font-family: 'Cairo', sans-serif; }
 let currentQuestion = 0;
 let score = 0;
 let answers = [];
-let timeLeft = 3600; // 60 minutes
+let timeLeft = 3600;
 let timerInterval;
 let startTime;
 
@@ -126,149 +126,21 @@ const questions = [
 {
 id: 1,
 arabic: {
-question: 'أي مما يلي يمثل كمية متجهة؟',
-options: ['الكتلة', 'السرعة', 'الزمن', 'درجة الحرارة']
+question: 'أي مما يلي يمثل كمية قياسية (scalar)؟',
+options: ['الإزاحة', 'السرعة', 'الكتلة', 'القوة']
 },
 english: {
-question: 'Which of the following represents a vector quantity?',
-options: ['Mass', 'Velocity', 'Time', 'Temperature']
+question: 'Which of the following represents a scalar quantity?',
+options: ['Displacement', 'Velocity', 'Mass', 'Force']
 },
-correct: 1,
+correct: 2,
 explanation: {
-arabic: 'السرعة كمية متجهة لأن لها مقدار واتجاه',
-english: 'Velocity is a vector because it has both magnitude and direction'
+arabic: 'الكتلة كمية قياسية لأنها لها مقدار فقط بدون اتجاه',
+english: 'Mass is a scalar because it has magnitude only without direction'
 }
 },
 {
 id: 2,
-arabic: {
-question: 'إذا كان المتجه a له مقدار 5 واتجاه 30° من المحور الأفقي، فما هي المركبة الأفقية له؟',
-options: ['2.5', '4.33', '5', '3']
-},
-english: {
-question: 'If vector a has magnitude 5 and direction 30° from horizontal, what is its horizontal component?',
-options: ['2.5', '4.33', '5', '3']
-},
-correct: 1,
-explanation: {
-arabic: 'المركبة الأفقية = 5 × cos(30°) = 5 × 0.866 = 4.33',
-english: 'Horizontal component = 5 × cos(30°) = 5 × 0.866 = 4.33'
-}
-},
-{
-id: 3,
-arabic: {
-question: 'متجهان متوازيان يعني أن:',
-options: ['لهما نفس المقدار فقط', 'لهما نفس الاتجاه فقط', 'لهما نفس المقدار والاتجاه', 'لهما نفس نقطة البداية']
-},
-english: {
-question: 'Two parallel vectors means:',
-options: ['They have the same magnitude only', 'They have the same direction only', 'They have same magnitude and direction', 'They have the same initial point']
-},
-correct: 1,
-explanation: {
-arabic: 'المتجهات المتوازية لها نفس الاتجاه أو اتجاهان متعاكسان',
-english: 'Parallel vectors have the same or opposite direction'
-}
-},
-{
-id: 4,
-arabic: {
-question: 'طريقة المثلث لجمع المتجهات تتطلب:',
-options: ['وضع المتجهات من نفس نقطة البداية', 'وضع ذيل المتجه الثاني على رأس الأول', 'رسم متوازي أضلاع', 'ضرب المتجهات']
-},
-english: {
-question: 'The triangle method for vector addition requires:',
-options: ['Placing vectors from same initial point', 'Placing tail of second vector at head of first', 'Drawing a parallelogram', 'Multiplying the vectors']
-},
-correct: 1,
-explanation: {
-arabic: 'في طريقة المثلث، نضع ذيل المتجه الثاني على رأس المتجه الأول',
-english: 'In triangle method, we place tail of second vector at head of first'
-}
-},
-{
-id: 5,
-arabic: {
-question: 'إذا كانت سرعة الطائرة 300 كم/س باتجاه الشمال، وسرعة الرياح 50 كم/س باتجاه الشرق، فما هو مقدار السرعة الناتجة؟',
-options: ['250 كم/س', '304 كم/س', '350 كم/س', '300 كم/س']
-},
-english: {
-question: 'If plane velocity is 300 km/h north and wind is 50 km/h east, what is the resultant speed?',
-options: ['250 km/h', '304 km/h', '350 km/h', '300 km/h']
-},
-correct: 1,
-explanation: {
-arabic: 'السرعة الناتجة = √(300² + 50²) = √92500 ≈ 304 كم/س',
-english: 'Resultant = √(300² + 50²) = √92500 ≈ 304 km/h'
-}
-},
-{
-id: 6,
-arabic: {
-question: 'المتجه الصفري هو:',
-options: ['متجه مقداره 0', 'متجه اتجاهه غير محدد', 'كلاهما', 'لا شيء مما سبق']
-},
-english: {
-question: 'Zero vector is:',
-options: ['A vector with magnitude 0', 'A vector with undefined direction', 'Both', 'None']
-},
-correct: 2,
-explanation: {
-arabic: 'المتجه الصفري مقداره 0 واتجاهه غير محدد',
-english: 'Zero vector has magnitude 0 and undefined direction'
-}
-},
-{
-id: 7,
-arabic: {
-question: 'إذا ضربنا متجهاً في عدد سالب، فإن:',
-options: ['يتغير المقدار فقط', 'يتغير الاتجاه فقط', 'يتغير المقدار والاتجاه', 'لا يتغير شيء']
-},
-english: {
-question: 'If we multiply a vector by a negative number:',
-options: ['Only magnitude changes', 'Only direction changes', 'Both magnitude and direction change', 'Nothing changes']
-},
-correct: 1,
-explanation: {
-arabic: 'الضرب في عدد سالب يعكس الاتجاه فقط',
-english: 'Multiplying by negative reverses the direction only'
-}
-},
-{
-id: 8,
-arabic: {
-question: 'المركبة الرأسية لمتجه مقداره 10 وزاويته 60° هي:',
-options: ['5', '8.66', '10', '7.07']
-},
-english: {
-question: 'The vertical component of a vector with magnitude 10 and angle 60° is:',
-options: ['5', '8.66', '10', '7.07']
-},
-correct: 1,
-explanation: {
-arabic: 'المركبة الرأسية = 10 × sin(60°) = 10 × 0.866 = 8.66',
-english: 'Vertical component = 10 × sin(60°) = 10 × 0.866 = 8.66'
-}
-},
-{
-id: 9,
-arabic: {
-question: 'متجهان متعاكسان يعني أن:',
-options: ['لهما نفس المقدار ونفس الاتجاه', 'لهما نفس المقدار واتجاهان متعاكسان', 'لهما مقداران مختلفان', 'لا شيء مما سبق']
-},
-english: {
-question: 'Two opposite vectors means:',
-options: ['Same magnitude and direction', 'Same magnitude but opposite directions', 'Different magnitudes', 'None']
-},
-correct: 1,
-explanation: {
-arabic: 'المتجهات المتعاكسة لها نفس المقدار ولكن اتجاهان متعاكسان',
-english: 'Opposite vectors have same magnitude but opposite directions'
-}
-},
-{
-id: 10,
 arabic: {
 question: 'إذا كان المتجه a = 3i + 4j، فما مقداره؟',
 options: ['5', '7', '12', '25']
@@ -284,61 +156,13 @@ english: '|a| = √(3² + 4²) = √(9+16) = √25 = 5'
 }
 },
 {
-id: 11,
-arabic: {
-question: 'طريقة متوازي الأضلاع لجمع المتجهات تستخدم عندما:',
-options: ['المتجهات على استقامة واحدة', 'المتجهات من نفس نقطة البداية', 'المتجهات متعامدة', 'أي حالة']
-},
-english: {
-question: 'Parallelogram method for vector addition is used when:',
-options: ['Vectors are collinear', 'Vectors have same initial point', 'Vectors are perpendicular', 'Any case']
-},
-correct: 1,
-explanation: {
-arabic: 'طريقة متوازي الأضلاع تستخدم عندما يكون للمتجهات نفس نقطة البداية',
-english: 'Parallelogram method is used when vectors have same initial point'
-}
-},
-{
-id: 12,
-arabic: {
-question: 'إذا تحركت سفينة 12 كم شمالاً ثم 5 كم شرقاً، فما البعد عن نقطة البداية؟',
-options: ['17 كم', '13 كم', '7 كم', '60 كم']
-},
-english: {
-question: 'If a ship moves 12 km north then 5 km east, what is the distance from start?',
-options: ['17 km', '13 km', '7 km', '60 km']
-},
-correct: 1,
-explanation: {
-arabic: 'المسافة = √(12² + 5²) = √(144+25) = √169 = 13 كم',
-english: 'Distance = √(12² + 5²) = √(144+25) = √169 = 13 km'
-}
-},
-{
-id: 13,
-arabic: {
-question: 'متجه الوحدة هو:',
-options: ['متجه مقداره 1', 'متجه اتجاهه المحور x', 'متجه مقداره 0', 'متجه في أي اتجاه']
-},
-english: {
-question: 'Unit vector is:',
-options: ['A vector with magnitude 1', 'A vector in x-axis direction', 'A vector with magnitude 0', 'A vector in any direction']
-},
-correct: 0,
-explanation: {
-arabic: 'متجه الوحدة هو متجه مقداره 1 فقط',
-english: 'Unit vector is a vector with magnitude 1 only'
-}
-},
-{
-id: 14,
+id: 3,
 arabic: {
 question: 'إذا كانت قوة مقدارها 100 N تؤثر بزاوية 37° من الأفقي، فما المركبة الأفقية؟',
 options: ['60 N', '80 N', '100 N', '37 N']
 },
 english: {
-question: 'If a force of 100 N acts at 37° from horizontal, what is horizontal component?',
+question: 'If a force of 100 N acts at 37° from horizontal, what is the horizontal component?',
 options: ['60 N', '80 N', '100 N', '37 N']
 },
 correct: 1,
@@ -348,23 +172,7 @@ english: 'Horizontal component = 100 × cos(37°) ≈ 100 × 0.8 = 80 N'
 }
 },
 {
-id: 15,
-arabic: {
-question: 'الكمية القياسية تختلف عن الكمية المتجهة في أنها:',
-options: ['لها اتجاه فقط', 'لها مقدار فقط', 'ليس لها مقدار', 'لها اتجاه ومقدار']
-},
-english: {
-question: 'Scalar quantity differs from vector in that it:',
-options: ['Has direction only', 'Has magnitude only', 'Has no magnitude', 'Has both direction and magnitude']
-},
-correct: 1,
-explanation: {
-arabic: 'الكمية القياسية لها مقدار فقط بدون اتجاه',
-english: 'Scalar has magnitude only without direction'
-}
-},
-{
-id: 16,
+id: 4,
 arabic: {
 question: 'إذا كان |a| = 6 و |b| = 8 وكانا متعامدين، فما |a + b|؟',
 options: ['14', '10', '2', '48']
@@ -380,7 +188,23 @@ english: '|a + b| = √(6² + 8²) = √(36+64) = √100 = 10'
 }
 },
 {
-id: 17,
+id: 5,
+arabic: {
+question: 'إذا ضربنا متجهاً في عدد سالب، فإن:',
+options: ['يتغير المقدار فقط', 'يتغير الاتجاه فقط', 'يتغير المقدار والاتجاه', 'لا يتغير شيء']
+},
+english: {
+question: 'If we multiply a vector by a negative number:',
+options: ['Only magnitude changes', 'Only direction changes', 'Both magnitude and direction change', 'Nothing changes']
+},
+correct: 2,
+explanation: {
+arabic: 'الضرب في عدد سالب يعكس الاتجاه ويبقي المقدار كما هو',
+english: 'Multiplying by negative reverses the direction and keeps magnitude the same'
+}
+},
+{
+id: 6,
 arabic: {
 question: 'المتجهات المتكافئة هي التي:',
 options: ['لها نفس نقطة البداية', 'لها نفس المقدار والاتجاه', 'لها نفس نقطة النهاية', 'متعامدة']
@@ -396,23 +220,87 @@ english: 'Equivalent vectors have same magnitude and direction'
 }
 },
 {
-id: 18,
+id: 7,
 arabic: {
-question: 'إذا تحرك شخص 3 كم شرقاً ثم 4 كم شمالاً، فما اتجاه حركته الناتجة؟',
-options: ['شمال شرق', 'شمال غرب', 'جنوب شرق', 'جنوب غرب']
+question: 'طريقة متوازي الأضلاع لجمع المتجهات تستخدم عندما:',
+options: ['المتجهات على استقامة واحدة', 'المتجهات من نفس نقطة البداية', 'المتجهات متعامدة', 'أي حالة']
 },
 english: {
-question: 'If a person moves 3 km east then 4 km north, what is the resultant direction?',
-options: ['Northeast', 'Northwest', 'Southeast', 'Southwest']
+question: 'Parallelogram method for vector addition is used when:',
+options: ['Vectors are collinear', 'Vectors have same initial point', 'Vectors are perpendicular', 'Any case']
 },
-correct: 0,
+correct: 1,
 explanation: {
-arabic: 'الحركة شرقاً ثم شمالاً تعني الاتجاه شمال شرق',
-english: 'Moving east then north means northeast direction'
+arabic: 'طريقة متوازي الأضلاع تستخدم عندما يكون للمتجهات نفس نقطة البداية',
+english: 'Parallelogram method is used when vectors have same initial point'
 }
 },
 {
-id: 19,
+id: 8,
+arabic: {
+question: 'إذا تحركت سفينة 12 كم شمالاً ثم 5 كم شرقاً، فما البعد عن نقطة البداية؟',
+options: ['17 كم', '13 كم', '7 كم', '60 كم']
+},
+english: {
+question: 'If a ship moves 12 km north then 5 km east, what is the distance from start?',
+options: ['17 km', '13 km', '7 km', '60 km']
+},
+correct: 1,
+explanation: {
+arabic: 'المسافة = √(12² + 5²) = √(144+25) = √169 = 13 كم',
+english: 'Distance = √(12² + 5²) = √(144+25) = √169 = 13 km'
+}
+},
+{
+id: 9,
+arabic: {
+question: 'متجه الوحدة هو:',
+options: ['متجه مقداره 1', 'متجه اتجاهه المحور x', 'متجه مقداره 0', 'متجه في أي اتجاه']
+},
+english: {
+question: 'Unit vector is:',
+options: ['A vector with magnitude 1', 'A vector in x-axis direction', 'A vector with magnitude 0', 'A vector in any direction']
+},
+correct: 0,
+explanation: {
+arabic: 'متجه الوحدة هو متجه مقداره 1 فقط',
+english: 'Unit vector is a vector with magnitude 1 only'
+}
+},
+{
+id: 10,
+arabic: {
+question: 'المركبة الرأسية لمتجه مقداره 10 وزاويته 60° هي:',
+options: ['5', '8.66', '10', '7.07']
+},
+english: {
+question: 'The vertical component of a vector with magnitude 10 and angle 60° is:',
+options: ['5', '8.66', '10', '7.07']
+},
+correct: 1,
+explanation: {
+arabic: 'المركبة الرأسية = 10 × sin(60°) = 10 × 0.866 = 8.66',
+english: 'Vertical component = 10 × sin(60°) = 10 × 0.866 = 8.66'
+}
+},
+{
+id: 11,
+arabic: {
+question: 'متجهان متعاكسان يعني أن:',
+options: ['لهما نفس المقدار ونفس الاتجاه', 'لهما نفس المقدار واتجاهان متعاكسان', 'لهما مقداران مختلفان', 'لا شيء مما سبق']
+},
+english: {
+question: 'Two opposite vectors means:',
+options: ['Same magnitude and direction', 'Same magnitude but opposite directions', 'Different magnitudes', 'None']
+},
+correct: 1,
+explanation: {
+arabic: 'المتجهات المتعاكسة لها نفس المقدار ولكن اتجاهان متعاكسان',
+english: 'Opposite vectors have same magnitude but opposite directions'
+}
+},
+{
+id: 12,
 arabic: {
 question: 'مقدار المتجه الناتج عن جمع متجهين متعاكسين متساويين في المقدار هو:',
 options: ['مجموع المقدارين', 'فرق المقدارين', 'صفر', 'ضعف المقدار']
@@ -428,7 +316,23 @@ english: 'Two equal opposite vectors cancel each other'
 }
 },
 {
-id: 20,
+id: 13,
+arabic: {
+question: 'إذا تحرك شخص 3 كم شرقاً ثم 4 كم شمالاً، فما اتجاه حركته الناتجة؟',
+options: ['شمال شرق', 'شمال غرب', 'جنوب شرق', 'جنوب غرب']
+},
+english: {
+question: 'If a person moves 3 km east then 4 km north, what is the resultant direction?',
+options: ['Northeast', 'Northwest', 'Southeast', 'Southwest']
+},
+correct: 0,
+explanation: {
+arabic: 'الحركة شرقاً ثم شمالاً تعني الاتجاه شمال شرق',
+english: 'Moving east then north means northeast direction'
+}
+},
+{
+id: 14,
 arabic: {
 question: 'إذا كان المتجه a = 5i + 12j، فما الزاوية التي يصنعها مع المحور الأفقي؟',
 options: ['67.4°', '22.6°', '45°', '90°']
@@ -441,6 +345,102 @@ correct: 0,
 explanation: {
 arabic: 'θ = tan⁻¹(12/5) = tan⁻¹(2.4) ≈ 67.4°',
 english: 'θ = tan⁻¹(12/5) = tan⁻¹(2.4) ≈ 67.4°'
+}
+},
+{
+id: 15,
+arabic: {
+question: 'إذا كانت سرعة الطائرة 300 كم/س باتجاه الشمال، وسرعة الرياح 50 كم/س باتجاه الشرق، فما هو مقدار السرعة الناتجة؟',
+options: ['250 كم/س', '304 كم/س', '350 كم/س', '300 كم/س']
+},
+english: {
+question: 'If plane velocity is 300 km/h north and wind is 50 km/h east, what is the resultant speed?',
+options: ['250 km/h', '304 km/h', '350 km/h', '300 km/h']
+},
+correct: 1,
+explanation: {
+arabic: 'السرعة الناتجة = √(300² + 50²) = √92500 ≈ 304 كم/س',
+english: 'Resultant = √(300² + 50²) = √92500 ≈ 304 km/h'
+}
+},
+{
+id: 16,
+arabic: {
+question: 'الكمية القياسية تختلف عن الكمية المتجهة في أنها:',
+options: ['لها اتجاه فقط', 'لها مقدار فقط', 'ليس لها مقدار', 'لها اتجاه ومقدار']
+},
+english: {
+question: 'Scalar quantity differs from vector in that it:',
+options: ['Has direction only', 'Has magnitude only', 'Has no magnitude', 'Has both direction and magnitude']
+},
+correct: 1,
+explanation: {
+arabic: 'الكمية القياسية لها مقدار فقط بدون اتجاه',
+english: 'Scalar has magnitude only without direction'
+}
+},
+{
+id: 17,
+arabic: {
+question: 'المتجه الصفري هو:',
+options: ['متجه مقداره 0', 'متجه اتجاهه غير محدد', 'كلاهما', 'لا شيء مما سبق']
+},
+english: {
+question: 'Zero vector is:',
+options: ['A vector with magnitude 0', 'A vector with undefined direction', 'Both', 'None']
+},
+correct: 2,
+explanation: {
+arabic: 'المتجه الصفري مقداره 0 واتجاهه غير محدد',
+english: 'Zero vector has magnitude 0 and undefined direction'
+}
+},
+{
+id: 18,
+arabic: {
+question: 'إذا كان المتجه a له مقدار 5 واتجاه 30° من المحور الأفقي، فما هي المركبة الأفقية له؟',
+options: ['2.5', '4.33', '5', '3']
+},
+english: {
+question: 'If vector a has magnitude 5 and direction 30° from horizontal, what is its horizontal component?',
+options: ['2.5', '4.33', '5', '3']
+},
+correct: 1,
+explanation: {
+arabic: 'المركبة الأفقية = 5 × cos(30°) = 5 × 0.866 = 4.33',
+english: 'Horizontal component = 5 × cos(30°) = 5 × 0.866 = 4.33'
+}
+},
+{
+id: 19,
+arabic: {
+question: 'طريقة المثلث لجمع المتجهات تتطلب:',
+options: ['وضع المتجهات من نفس نقطة البداية', 'وضع ذيل المتجه الثاني على رأس الأول', 'رسم متوازي أضلاع', 'ضرب المتجهات']
+},
+english: {
+question: 'The triangle method for vector addition requires:',
+options: ['Placing vectors from same initial point', 'Placing tail of second vector at head of first', 'Drawing a parallelogram', 'Multiplying the vectors']
+},
+correct: 1,
+explanation: {
+arabic: 'في طريقة المثلث، نضع ذيل المتجه الثاني على رأس المتجه الأول',
+english: 'In triangle method, we place tail of second vector at head of first'
+}
+},
+{
+id: 20,
+arabic: {
+question: 'أي مما يلي يمثل كمية متجهة؟',
+options: ['الكتلة', 'السرعة', 'الزمن', 'درجة الحرارة']
+},
+english: {
+question: 'Which of the following represents a vector quantity?',
+options: ['Mass', 'Velocity', 'Time', 'Temperature']
+},
+correct: 1,
+explanation: {
+arabic: 'السرعة كمية متجهة لأن لها مقدار واتجاه',
+english: 'Velocity is a vector because it has both magnitude and direction'
 }
 }
 ];
