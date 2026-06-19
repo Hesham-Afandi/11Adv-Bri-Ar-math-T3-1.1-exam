@@ -1,502 +1,929 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📐 رياضيات 11 متقدم - المتجهات</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Cairo', sans-serif; }
-        .correct { background-color: #dcfce7 !important; border-color: #16a34a !important; }
-        .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
-        .formula { font-family: 'Times New Roman', serif; font-style: italic; direction: ltr; display: inline-block; }
-        .timer-warning { color: #dc2626 !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 50% { opacity: 0.7; } }
-        @media print { .no-print { display: none !important; } }
-        .success-badge { 
-            display: inline-block; 
-            padding: 4px 12px; 
-            border-radius: 20px; 
-            font-weight: bold;
-            font-size: 0.875rem;
-        }
-        .grade-excellent { background: #dcfce7; color: #166534; }
-        .grade-good { background: #fef3c7; color: #92400e; }
-        .grade-pass { background: #dbeafe; color: #1e40af; }
-        .grade-fail { background: #fee2e2; color: #991b1b; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>امتحان المتجهات - Vectors Exam | 11 متقدم</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Cairo', sans-serif; }
+body.en-mode { font-family: 'Inter', sans-serif; direction: ltr; text-align: left; }
+.gradient-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.gradient-violet { background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%); }
+.timer { animation: pulse 1s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+.fade-in { animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Language Switcher */
+.lang-switch {
+    position: fixed; top: 16px; left: 16px; z-index: 100;
+    background: white; padding: 6px; border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; gap: 4px;
+    border: 2px solid #667eea;
+}
+body.en-mode .lang-switch { left: auto; right: 16px; }
+.lang-btn {
+    padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold;
+    transition: all 0.3s; border: none; font-size: 0.875rem;
+    background: transparent; color: #6b7280;
+}
+.lang-btn.active { background: #667eea; color: white; box-shadow: 0 2px 6px rgba(102,126,234,0.4); }
+.lang-btn:hover:not(.active) { background: #eef2ff; color: #667eea; }
+
+/* Bilingual Text */
+.ar-text { display: block; }
+.en-text { display: none; font-family: 'Inter', sans-serif; direction: ltr; text-align: left; }
+body.en-mode .ar-text { display: none; }
+body.en-mode .en-text { display: block; }
+</style>
 </head>
-<body class="bg-gray-50 text-gray-800 p-4 md:p-8 min-h-screen">
+<body class="bg-gray-50 min-h-screen">
 
-    <!-- Timer -->
-    <div id="timer-container" class="max-w-4xl mx-auto mb-4 text-center no-print">
-        <div class="bg-white p-4 rounded-xl shadow-md inline-block border-2 border-teal-100">
-            <span class="text-gray-600 ml-2">⏱️ الوقت المتبقي:</span>
-            <span id="timer" class="text-2xl font-bold text-teal-600 font-mono">60:00</span>
+<!-- Language Switcher -->
+<div class="lang-switch">
+    <button class="lang-btn active" onclick="setLanguage('ar')" id="btn-ar">عربي</button>
+    <button class="lang-btn" onclick="setLanguage('en')" id="btn-en">EN</button>
+</div>
+
+<!-- Header -->
+<div class="gradient-primary text-white py-4 px-6 shadow-lg sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-3">
+        <div>
+            <h1 class="font-bold text-lg">
+                <span class="ar-text">📐 امتحان المتجهات - 11 متقدم</span>
+                <span class="en-text">📐 Vectors Exam - Grade 11 Advanced</span>
+            </h1>
+            <p class="text-xs opacity-80">
+                <span class="ar-text">الوحدة الأولى: المتجهات والعمليات عليها</span>
+                <span class="en-text">Unit 1: Vectors and Operations</span>
+            </p>
+        </div>
+        <div class="text-left">
+            <div id="timer" class="text-3xl font-bold timer">60:00</div>
+            <p class="text-xs opacity-80">
+                <span class="ar-text">الوقت المتبقي</span>
+                <span class="en-text">Time Remaining</span>
+            </p>
         </div>
     </div>
+</div>
 
-    <!-- Controls -->
-    <div class="max-w-4xl mx-auto mb-6 flex flex-wrap gap-3 justify-center no-print">
-        <button onclick="toggleAnswers()" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer">
-            👁️ إظهار / إخفاء الإجابات النموذجية
-        </button>
-        <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer">
-            🖨️ طباعة / حفظ كـ PDF
-        </button>
-    </div>
+<!-- Progress Bar -->
+<div class="bg-gray-200 h-2">
+    <div id="progressBar" class="gradient-violet h-2 transition-all duration-300" style="width: 0%"></div>
+</div>
 
-    <!-- Header -->
-    <header class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md mb-8 border-r-4 border-teal-600">
-        <div class="text-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">📐 رياضيات الصف الحادي عشر متقدم</h1>
-            <h2 class="text-lg text-teal-600 font-semibold">الوحدة الأولى: المتجهات - الدرس 7.1</h2>
-            <p class="text-sm text-gray-600 mt-2">Introduction to Vectors - الكميات القياسية والمتجهة، العمليات على المتجهات</p>
-        </div>
-        <div class="mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-600">
-            <span>📅 التاريخ: <input type="text" class="border-b border-gray-400 bg-transparent w-28 text-center"></span>
-            <span>👤 الاسم: <input type="text" id="studentName" class="border-b border-gray-400 bg-transparent w-32 text-center" placeholder="أدخل الاسم"></span>
-            <span>🏫 الشعبة: <input type="text" id="studentClass" class="border-b border-gray-400 bg-transparent w-28 text-center" placeholder="الفصل"></span>
-            <span>⏱️ المدة: 60 دقيقة</span>
-            <span>📊 المجموع: 100 درجة</span>
-        </div>
-    </header>
+<div class="max-w-4xl mx-auto px-4 py-8">
 
-    <main class="max-w-4xl mx-auto space-y-8">
-
-        <!-- Section 1: Scalar and Vector Quantities -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الأول: الكميات القياسية والمتجهة</h2>
-            <ol id="section1-list" class="space-y-4 text-sm">
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-1">
-                    <strong>1.</strong> أي مما يلي يمثل كمية قياسية (Scalar Quantity)؟<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="a" class="ml-2"> أ) السرعة المتجهة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="b" class="ml-2"> ب) الإزاحة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="c" class="ml-2"> ج) الكتلة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="d" class="ml-2"> د) القوة</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) الكتلة - لأنها لها مقدار فقط بدون اتجاه</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-2">
-                    <strong>2.</strong> أي مما يلي يمثل كمية متجهة (Vector Quantity)؟<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="a" class="ml-2"> أ) الزمن</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="b" class="ml-2"> ب) درجة الحرارة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="c" class="ml-2"> ج) السرعة المتجهة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="d" class="ml-2"> د) المسافة</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) السرعة المتجهة - لأنها لها مقدار واتجاه</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-3">
-                    <strong>3.</strong> الفرق الرئيسي بين الكمية القياسية والكمية المتجهة هو:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="a" class="ml-2"> أ) الكمية القياسية لها اتجاه فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="b" class="ml-2"> ب) الكمية المتجهة لها مقدار فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="c" class="ml-2"> ج) الكمية المتجهة لها مقدار واتجاه</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="d" class="ml-2"> د) لا يوجد فرق</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) الكمية المتجهة لها مقدار واتجاه، بينما القياسية لها مقدار فقط</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-4">
-                    <strong>4.</strong> أي مما يلي صحيح عن المتجه الصفري (Zero Vector)؟<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="a" class="ml-2"> أ) مقداره 1 واتجاهه محدد</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="b" class="ml-2"> ب) مقداره 0 واتجاهه غير محدد</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="c" class="ml-2"> ج) مقداره 0 واتجاهه محدد</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="d" class="ml-2"> د) مقداره 1 واتجاهه غير محدد</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) المتجه الصفري مقداره 0 واتجاهه غير محدد</div>
-                </li>
-            </ol>
-        </section>
-
-        <!-- Section 2: Vector Components -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الثاني: مركبات المتجهات</h2>
-            <ol id="section2-list" class="space-y-4 text-sm">
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-5">
-                    <strong>5.</strong> إذا كان المتجه a له مقدار 10 وحدات وزاوية 30° مع المحور الأفقي، فما المركبة الأفقية (a_x)؟<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="a" class="ml-2"> أ) 5</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="b" class="ml-2"> ب) 8.66</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="c" class="ml-2"> ج) 10</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="d" class="ml-2"> د) 7.07</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) a_x = 10 × cos(30°) = 10 × 0.866 = 8.66</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-6">
-                    <strong>6.</strong> في السؤال السابق، ما المركبة الرأسية (a_y)؟<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="a" class="ml-2"> أ) 5</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="b" class="ml-2"> ب) 8.66</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="c" class="ml-2"> ج) 10</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="d" class="ml-2"> د) 7.07</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: أ) a_y = 10 × sin(30°) = 10 × 0.5 = 5</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-7">
-                    <strong>7.</strong> إذا كان المتجه v = 3i + 4j، فما مقداره؟<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="a" class="ml-2"> أ) 5</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="b" class="ml-2"> ب) 7</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="c" class="ml-2"> ج) 12</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="d" class="ml-2"> د) 25</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: أ) |v| = √(3² + 4²) = √(9+16) = √25 = 5</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-8">
-                    <strong>8.</strong> المتجه الوحدة (Unit Vector) في اتجاه المتجه v هو:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="a" class="ml-2"> أ) متجه مقداره |v|</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="b" class="ml-2"> ب) متجه مقداره 1 في اتجاه v</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="c" class="ml-2"> ج) متجه مقداره 0</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="d" class="ml-2"> د) متجه عمودي على v</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) متجه الوحدة مقداره 1 وله نفس اتجاه المتجه الأصلي</div>
-                </li>
-            </ol>
-        </section>
-
-        <!-- Section 3: Vector Addition -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الثالث: جمع المتجهات</h2>
-            <ol id="section3-list" class="space-y-4 text-sm">
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-9">
-                    <strong>9.</strong> في طريقة المثلث (Triangle Method) لجمع المتجهات:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="a" class="ml-2"> أ) نضع المتجهات من نفس نقطة البداية</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="b" class="ml-2"> ب) نضع ذيل المتجه الثاني على رأس المتجه الأول</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="c" class="ml-2"> ج) نرسم متوازي أضلاع</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="d" class="ml-2"> د) نضرب المتجهات في بعضها</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) في طريقة المثلث، نضع ذيل المتجه الثاني على رأس المتجه الأول</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-10">
-                    <strong>10.</strong> طريقة متوازي الأضلاع (Parallelogram Method) تستخدم عندما:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="a" class="ml-2"> أ) المتجهات على استقامة واحدة</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="b" class="ml-2"> ب) المتجهات من نفس نقطة البداية</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="c" class="ml-2"> ج) المتجهات متعامدة فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="d" class="ml-2"> د) أي حالة</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) طريقة متوازي الأضلاع تستخدم عندما يكون للمتجهات نفس نقطة البداية</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-11">
-                    <strong>11.</strong> إذا تحركت سيارة 3 كم شرقاً ثم 4 كم شمالاً، فما البعد عن نقطة البداية؟<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="a" class="ml-2"> أ) 7 كم</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="b" class="ml-2"> ب) 5 كم</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="c" class="ml-2"> ج) 1 كم</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="d" class="ml-2"> د) 12 كم</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) المسافة = √(3² + 4²) = √(9+16) = √25 = 5 كم</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-12">
-                    <strong>12.</strong> إذا كانت سرعة طائرة 200 كم/س شمالاً وسرعة الرياح 50 كم/س شرقاً، فما مقدار السرعة الناتجة؟<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="a" class="ml-2"> أ) 250 كم/س</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="b" class="ml-2"> ب) 206 كم/س</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="c" class="ml-2"> ج) 150 كم/س</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="d" class="ml-2"> د) 200 كم/س</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) السرعة الناتجة = √(200² + 50²) = √42500 ≈ 206 كم/س</div>
-                </li>
-            </ol>
-        </section>
-
-        <!-- Section 4: Parallel and Opposite Vectors -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الرابع: المتجهات المتوازية والمتعاكسة</h2>
-            <ol id="section4-list" class="space-y-4 text-sm">
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-13">
-                    <strong>13.</strong> المتجهات المتوازية (Parallel Vectors) هي:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="a" class="ml-2"> أ) لها نفس المقدار فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="b" class="ml-2"> ب) لها نفس الاتجاه أو اتجاهان متعاكسان</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="c" class="ml-2"> ج) لها نفس نقطة البداية</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="d" class="ml-2"> د) متعامدة</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) المتجهات المتوازية لها نفس الاتجاه أو اتجاهان متعاكسان</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-14">
-                    <strong>14.</strong> المتجهات المتعاكسة (Opposite Vectors) هي:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="a" class="ml-2"> أ) لها نفس المقدار ونفس الاتجاه</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="b" class="ml-2"> ب) لها نفس المقدار واتجاهان متعاكسان</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="c" class="ml-2"> ج) لها مقداران مختلفان</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="d" class="ml-2"> د) متعامدة</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) المتجهات المتعاكسة لها نفس المقدار ولكن اتجاهان متعاكسان</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-15">
-                    <strong>15.</strong> إذا ضربنا متجهاً في عدد سالب (-2)، فإن:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="a" class="ml-2"> أ) يتغير المقدار فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="b" class="ml-2"> ب) يتغير الاتجاه فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="c" class="ml-2"> ج) يتضاعف المقدار وينعكس الاتجاه</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="d" class="ml-2"> د) لا يتغير شيء</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) الضرب في -2 يتضاعف المقدار (×2) وينعكس الاتجاه</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-16">
-                    <strong>16.</strong> حاصل جمع متجهين متعاكسين متساويين في المقدار هو:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="a" class="ml-2"> أ) ضعف المقدار</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="b" class="ml-2"> ب) صفر (المتجه الصفري)</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="c" class="ml-2"> ج) الفرق بين المقدارين</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="d" class="ml-2"> د) مجموع المقدارين</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) المتجهان المتعاكسان المتساويان يلغي أحدهما الآخر = متجه صفري</div>
-                </li>
-            </ol>
-        </section>
-
-        <!-- Section 5: Vector Properties and Applications -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الخامس: خصائص المتجهات وتطبيقاتها</h2>
-            <ol id="section5-list" class="space-y-4 text-sm">
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-17">
-                    <strong>17.</strong> الخاصية التبديلية (Commutative Property) لجمع المتجهات تعني:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="a" class="ml-2"> أ) a + b = b + a</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="b" class="ml-2"> ب) a + (b + c) = (a + b) + c</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="c" class="ml-2"> ج) a + 0 = a</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="d" class="ml-2"> د) a + (-a) = 0</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: أ) الخاصية التبديلية: a + b = b + a (ترتيب الجمع لا يهم)</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-18">
-                    <strong>18.</strong> المتجهات المتكافئة (Equivalent Vectors) هي:<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="a" class="ml-2"> أ) لها نفس نقطة البداية فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="b" class="ml-2"> ب) لها نفس المقدار والاتجاه</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="c" class="ml-2"> ج) لها نفس نقطة النهاية فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="d" class="ml-2"> د) متعامدة</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) المتجهات المتكافئة لها نفس المقدار والاتجاه</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-19">
-                    <strong>19.</strong> إذا كان المتجه a = 5i + 12j، فما الزاوية التي يصنعها مع المحور الأفقي؟<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="a" class="ml-2"> أ) 22.6°</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="b" class="ml-2"> ب) 67.4°</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="c" class="ml-2"> ج) 45°</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="d" class="ml-2"> د) 90°</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) θ = tan⁻¹(12/5) = tan⁻¹(2.4) ≈ 67.4°</div>
-                </li>
-                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-20">
-                    <strong>20.</strong> أي مما يلي يمثل تمثيلاً صحيحاً للمتجه في الصورة الإحداثية؟<br>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="a" class="ml-2"> أ) a = (3, 4) فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="b" class="ml-2"> ب) a = 3i + 4j فقط</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="c" class="ml-2"> ج) كلا التمثيلين صحيح</label>
-                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="d" class="ml-2"> د) لا شيء مما سبق</label>
-                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) كلا التمثيلين صحيح: (3, 4) أو 3i + 4j</div>
-                </li>
-            </ol>
-        </section>
-
-        <!-- Submit Button -->
-        <div class="text-center no-print pb-8">
-            <button onclick="gradeExam()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-lg px-10 py-4 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer">
-                📝 تسليم وتصحيح الامتحان
-            </button>
-        </div>
-    </main>
-
-    <!-- Results Panel -->
-    <div id="results-panel" class="max-w-4xl mx-auto mt-8 bg-white p-8 rounded-2xl shadow-2xl border-t-4 border-emerald-500 hidden no-print">
-        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">📊 نتائج الامتحان</h2>
-        <div class="grid md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-blue-50 p-4 rounded-xl text-center"><p>اسم الطالب</p><p id="res-name" class="font-bold text-xl text-teal-700">-</p></div>
-            <div class="bg-purple-50 p-4 rounded-xl text-center"><p>التاريخ</p><p id="res-date" class="font-bold text-xl text-purple-700">-</p></div>
-            <div class="bg-emerald-50 p-4 rounded-xl text-center"><p>المجموع</p><p id="res-total" class="font-bold text-3xl text-emerald-600">0 / 100</p></div>
-        </div>
-
-        <!-- Success Rate Badge -->
-        <div class="text-center mb-6">
-            <span id="success-badge" class="success-badge grade-excellent">ممتاز - 100%</span>
-            <p id="success-percent" class="text-4xl font-bold text-emerald-600 mt-2">100%</p>
-            <p class="text-sm text-gray-500">نسبة النجاح</p>
-        </div>
-
-        <!-- Performance Breakdown -->
-        <div class="bg-gray-50 p-6 rounded-xl mb-6">
-            <h3 class="font-bold text-lg mb-4 text-gray-800">📈 تفصيل الأداء حسب القسم:</h3>
-            <div class="space-y-3">
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-700">الكميات القياسية والمتجهة</span>
-                    <span id="sec1-score" class="font-bold text-teal-600">0/4</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-700">مركبات المتجهات</span>
-                    <span id="sec2-score" class="font-bold text-teal-600">0/4</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-700">جمع المتجهات</span>
-                    <span id="sec3-score" class="font-bold text-teal-600">0/4</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-700">المتجهات المتوازية والمتعاكسة</span>
-                    <span id="sec4-score" class="font-bold text-teal-600">0/4</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-700">خصائص المتجهات وتطبيقاتها</span>
-                    <span id="sec5-score" class="font-bold text-teal-600">0/4</span>
-                </div>
+<!-- Start Screen -->
+<div id="startScreen" class="fade-in">
+    <div class="bg-white rounded-3xl p-8 shadow-xl text-center">
+        <div class="text-6xl mb-4">📐</div>
+        <h2 class="text-3xl font-bold mb-4">
+            <span class="ar-text">امتحان المتجهات</span>
+            <span class="en-text">Vectors Exam</span>
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+            <div class="bg-indigo-50 p-4 rounded-xl">
+                <p class="font-bold text-indigo-600">
+                    <span class="ar-text">📝 عدد الأسئلة</span>
+                    <span class="en-text">📝 Questions</span>
+                </p>
+                <p class="text-2xl font-bold">20</p>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-xl">
+                <p class="font-bold text-purple-600">
+                    <span class="ar-text">⏱️ الوقت</span>
+                    <span class="en-text">⏱️ Time</span>
+                </p>
+                <p class="text-2xl font-bold">60 <span class="ar-text">دقيقة</span><span class="en-text">min</span></p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-xl">
+                <p class="font-bold text-green-600">
+                    <span class="ar-text">🎯 الدرجة</span>
+                    <span class="en-text">🎯 Score</span>
+                </p>
+                <p class="text-2xl font-bold">100%</p>
+            </div>
+            <div class="bg-orange-50 p-4 rounded-xl">
+                <p class="font-bold text-orange-600">
+                    <span class="ar-text">📚 الوحدة</span>
+                    <span class="en-text">📚 Unit</span>
+                </p>
+                <p class="text-2xl font-bold">1</p>
             </div>
         </div>
+        <button onclick="startExam()" class="mt-8 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-12 py-4 rounded-xl font-bold text-xl transition transform hover:scale-105 shadow-lg">
+            <span class="ar-text">ابدأ الامتحان 🚀</span>
+            <span class="en-text">Start Exam 🚀</span>
+        </button>
+    </div>
+</div>
 
-        <!-- Email Send Button -->
-        <div class="text-center mb-6">
-            <button id="sendEmailBtn" onclick="sendResultsToEmail()" class="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white text-lg px-8 py-3 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer">
-                📧 إرسال النتائج للمعلم
-            </button>
-            <p id="emailStatus" class="text-sm mt-2 text-center font-medium"></p>
+<!-- Exam Container -->
+<div id="examContainer" class="hidden space-y-6">
+    <!-- Questions will be inserted here -->
+</div>
+
+<!-- Results Screen -->
+<div id="resultsScreen" class="hidden fade-in">
+    <div class="bg-white rounded-3xl p-8 shadow-xl text-center">
+        <div id="resultIcon" class="text-6xl mb-4">🎉</div>
+        <h2 class="text-3xl font-bold mb-4" id="resultTitle">
+            <span class="ar-text">أحسنت!</span>
+            <span class="en-text">Well Done!</span>
+        </h2>
+        <div class="grid grid-cols-3 gap-4 mb-8">
+            <div class="bg-indigo-50 p-4 rounded-xl">
+                <p class="font-bold text-indigo-600">
+                    <span class="ar-text">الدرجة</span>
+                    <span class="en-text">Score</span>
+                </p>
+                <p id="finalScore" class="text-3xl font-bold">0%</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-xl">
+                <p class="font-bold text-green-600">
+                    <span class="ar-text">الصحيحة</span>
+                    <span class="en-text">Correct</span>
+                </p>
+                <p id="correctCount" class="text-3xl font-bold">0/20</p>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-xl">
+                <p class="font-bold text-purple-600">
+                    <span class="ar-text">الوقت</span>
+                    <span class="en-text">Time</span>
+                </p>
+                <p id="timeTaken" class="text-3xl font-bold">00:00</p>
+            </div>
         </div>
-
-        <div class="flex gap-3 justify-center">
-            <button onclick="window.print()" class="bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold">🖨️ طباعة النتائج</button>
+        <div id="detailedResults" class="text-right mb-8"></div>
+        <div class="flex flex-wrap gap-4 justify-center">
+            <button onclick="location.reload()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-bold transition">
+                <span class="ar-text">إعادة الامتحان 🔄</span>
+                <span class="en-text">Retry Exam 🔄</span>
+            </button>
+            <button onclick="emailResults()" class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-8 py-3 rounded-xl font-bold transition">
+                <span class="ar-text">إرسال بالإيميل 📧</span>
+                <span class="en-text">Email Results 📧</span>
+            </button>
         </div>
     </div>
+</div>
 
-    <footer class="max-w-4xl mx-auto mt-10 mb-8 text-center text-gray-500 text-sm no-print">
-        © رياضيات الصف الحادي عشر متقدم | المتجهات 7.1 | Mr. Mohammed Hesham
-    </footer>
+</div>
 
-    <script>
-        // EmailJS Configuration
-        const PUBLIC_KEY = "Rb3Lq8tXaFmc5YHUH";
-        const SERVICE_ID = "service_w15m64i";
-        const TEMPLATE_ID = "template_5b0u2tq";
-        const TARGET_EMAIL = "mohammedhesham872@gmail.com";
-
-        (function(){ emailjs.init(PUBLIC_KEY); })();
-
-        // Timer
-        let timeRemaining = 3600;
-        let timerInterval;
-
-        function startTimer() {
-            document.getElementById('timer-container').style.display = 'block';
-            timerInterval = setInterval(() => {
-                timeRemaining--;
-                const minutes = Math.floor(timeRemaining / 60);
-                const seconds = timeRemaining % 60;
-                const timerEl = document.getElementById('timer');
-                timerEl.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-                
-                if (timeRemaining <= 300) timerEl.classList.add('timer-warning');
-                if (timeRemaining <= 0) {
-                    clearInterval(timerInterval);
-                    alert("انتهى الوقت! سيتم تسليم الامتحان تلقائياً.");
-                    gradeExam();
-                }
-            }, 1000);
+<script>
+// ==================== QUESTIONS DATA ====================
+const questions = [
+    {
+        ar: {
+            q: 'ما الفرق بين المقدار المتجه (Vector) والمقدار القياسي (Scalar)؟',
+            options: [
+                'المقدار المتجه له مقدار فقط، بينما القياسي له مقدار واتجاه',
+                'المقدار المتجه له مقدار واتجاه، بينما القياسي له مقدار فقط',
+                'لا يوجد فرق بينهما',
+                'المقدار المتجه يتغير مع الزمن، بينما القياسي ثابت'
+            ],
+            correct: 1,
+            explain: 'المقدار المتجه (Vector) له مقدار واتجاه (مثل السرعة، القوة)، بينما المقدار القياسي (Scalar) له مقدار فقط (مثل الكتلة، الزمن، المسافة).'
+        },
+        en: {
+            q: 'What is the difference between a vector quantity and a scalar quantity?',
+            options: [
+                'Vector has magnitude only, scalar has magnitude and direction',
+                'Vector has magnitude and direction, scalar has magnitude only',
+                'There is no difference between them',
+                'Vector changes with time, scalar is constant'
+            ],
+            correct: 1,
+            explain: 'A vector quantity has both magnitude and direction (like velocity, force), while a scalar quantity has magnitude only (like mass, time, distance).'
         }
-
-        function toggleAnswers() {
-            document.querySelectorAll('.answer-box').forEach(el => el.classList.toggle('hidden'));
+    },
+    {
+        ar: {
+            q: 'أي مما يلي يمثل مقدارا متجهاً (Vector)؟',
+            options: [
+                'السرعة (Velocity)',
+                'المسافة (Distance)',
+                'الكتلة (Mass)',
+                'الزمن (Time)'
+            ],
+            correct: 0,
+            explain: 'السرعة (Velocity) مقدار متجه لأنه له مقدار واتجاه. المسافة والكتلة والزمن مقادير قياسية لأنها لها مقدار فقط.'
+        },
+        en: {
+            q: 'Which of the following represents a vector quantity?',
+            options: [
+                'Velocity',
+                'Distance',
+                'Mass',
+                'Time'
+            ],
+            correct: 0,
+            explain: 'Velocity is a vector quantity because it has both magnitude and direction. Distance, mass, and time are scalar quantities because they have magnitude only.'
         }
-
-        function gradeExam() {
-            let correctCount = 0;
-            const correctAnswers = [
-                'c','c','c','b',  // Q1-4
-                'b','a','a','b',  // Q5-8
-                'b','b','b','b',  // Q9-12
-                'b','b','c','b',  // Q13-16
-                'a','b','b','c'   // Q17-20
-            ];
-
-            let sec1 = 0, sec2 = 0, sec3 = 0, sec4 = 0, sec5 = 0;
-
-            for(let i=1; i<=20; i++){
-                const selected = document.querySelector(`input[name="q${i}"]:checked`);
-                const li = document.getElementById(`q-${i}`);
-                const isCorrect = selected && selected.value === correctAnswers[i-1];
-                
-                if (isCorrect) {
-                    correctCount++;
-                    li.classList.add('correct');
-                    li.classList.remove('incorrect');
-                    
-                    if (i <= 4) sec1++;
-                    else if (i <= 8) sec2++;
-                    else if (i <= 12) sec3++;
-                    else if (i <= 16) sec4++;
-                    else sec5++;
-                } else {
-                    li.classList.add('incorrect');
-                    li.classList.remove('correct');
-                }
-            }
-
-            const score = (correctCount / 20) * 100;
-            const successRate = Math.round(score);
-            
-            document.getElementById('res-total').textContent = `${Math.round(score)} / 100`;
-            document.getElementById('res-name').textContent = document.getElementById('studentName').value || 'طالب';
-            document.getElementById('res-date').textContent = new Date().toLocaleDateString('ar-AE');
-            
-            document.getElementById('sec1-score').textContent = `${sec1}/4`;
-            document.getElementById('sec2-score').textContent = `${sec2}/4`;
-            document.getElementById('sec3-score').textContent = `${sec3}/4`;
-            document.getElementById('sec4-score').textContent = `${sec4}/4`;
-            document.getElementById('sec5-score').textContent = `${sec5}/4`;
-            
-            const badge = document.getElementById('success-badge');
-            const percent = document.getElementById('success-percent');
-            percent.textContent = `${successRate}%`;
-            
-            if(successRate >= 90) {
-                badge.textContent = 'ممتاز';
-                badge.className = 'success-badge grade-excellent';
-            } else if(successRate >= 75) {
-                badge.textContent = 'جيد جداً';
-                badge.className = 'success-badge grade-good';
-            } else if(successRate >= 50) {
-                badge.textContent = 'جيد';
-                badge.className = 'success-badge grade-pass';
-            } else {
-                badge.textContent = 'يحتاج تحسين';
-                badge.className = 'success-badge grade-fail';
-            }
-            
-            document.getElementById('results-panel').classList.remove('hidden');
-            document.getElementById('results-panel').scrollIntoView({ behavior: 'smooth' });
-            document.getElementById('sendEmailBtn').classList.remove('hidden');
+    },
+    {
+        ar: {
+            q: 'ما هي طريقة المثلث (Triangle Method) لجمع المتجهات؟',
+            options: [
+                'نضع المتجهين من نفس نقطة البداية',
+                'نضع ذيل المتجه الثاني عند رأس المتجه الأول، ثم نرسم المتجه الناتج من ذيل الأول إلى رأس الثاني',
+                'نرسم متوازي أضلاع',
+                'نضرب المتجهين في بعضهما'
+            ],
+            correct: 1,
+            explain: 'في طريقة المثلث: نضع ذيل المتجه الثاني عند رأس المتجه الأول، ثم نرسم المتجه الناتج من ذيل المتجه الأول إلى رأس المتجه الثاني.'
+        },
+        en: {
+            q: 'What is the Triangle Method for adding vectors?',
+            options: [
+                'Place both vectors from the same starting point',
+                'Place the tail of the second vector at the head of the first, then draw the resultant from the tail of the first to the head of the second',
+                'Draw a parallelogram',
+                'Multiply the vectors together'
+            ],
+            correct: 1,
+            explain: 'In the Triangle Method: place the tail of the second vector at the head of the first, then draw the resultant from the tail of the first to the head of the second.'
         }
-
-        function sendResultsToEmail() {
-            const btn = document.getElementById('sendEmailBtn');
-            const status = document.getElementById('emailStatus');
-            btn.disabled = true;
-            btn.textContent = '⏳ جاري الإرسال...';
-
-            const name = document.getElementById('studentName').value || 'N/A';
-            const studentClass = document.getElementById('studentClass').value || 'غير محدد';
-            const date = document.querySelector('input[type="text"]').value || new Date().toLocaleDateString('ar-AE');
-            const score = document.getElementById('res-total').textContent;
-            const successRate = document.getElementById('success-percent').textContent;
-            const sec1 = document.getElementById('sec1-score').textContent;
-            const sec2 = document.getElementById('sec2-score').textContent;
-            const sec3 = document.getElementById('sec3-score').textContent;
-            const sec4 = document.getElementById('sec4-score').textContent;
-            const sec5 = document.getElementById('sec5-score').textContent;
-
-            let answersHTML = `<div dir="rtl" style="font-family: 'Cairo', sans-serif;">
-                <h3 style="color:#0d9488;">📊 تفصيل الأداء - امتحان المتجهات 7.1:</h3>
-                <p><strong>الطالب:</strong> ${name} | <strong>الشعبة:</strong> ${studentClass}</p>
-                <ul>
-                    <li>الكميات القياسية والمتجهة: ${sec1}</li>
-                    <li>مركبات المتجهات: ${sec2}</li>
-                    <li>جمع المتجهات: ${sec3}</li>
-                    <li>المتجهات المتوازية والمتعاكسة: ${sec4}</li>
-                    <li>خصائص المتجهات وتطبيقاتها: ${sec5}</li>
-                </ul>
-                <table style="border:1px solid #e5e7eb; border-collapse:collapse; width:100%; font-size:14px; direction: rtl;">
-                <tr style="background:#0d9488; color:white;"><th style="border:1px solid #e5e7eb; padding:8px;">السؤال</th><th style="border:1px solid #e5e7eb; padding:8px;">الإجابة المختارة</th><th style="border:1px solid #e5e7eb; padding:8px;">الحالة</th></tr>`;
-            
-            const correctAnswers = ['c','c','c','b','b','a','a','b','b','b','b','b','b','b','c','b','a','b','b','c'];
-            
-            for(let i=1; i<=20; i++) {
-                const sel = document.querySelector(`input[name="q${i}"]:checked`);
-                const isCorrect = sel && sel.value === correctAnswers[i-1];
-                answersHTML += `<tr><td style="border:1px solid #e5e7eb; padding:6px;">${i}</td><td style="border:1px solid #e5e7eb; padding:6px;">${sel ? sel.value : '-'}</td><td style="border:1px solid #e5e7eb; padding:6px; color:${isCorrect ? 'green' : 'red'}">${isCorrect ? '✅ صحيح' : '❌ خطأ'}</td></tr>`;
-            }
-            answersHTML += '</table></div>';
-
-            const templateParams = {
-                to_email: TARGET_EMAIL,
-                student_name: name,
-                exam_date: date,
-                total_score: score,
-                success_rate: successRate,
-                answers_table: answersHTML
-            };
-
-            emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
-                .then(() => {
-                    status.textContent = '✅ تم الإرسال بنجاح! تحقق من Gmail.';
-                    status.style.color = '#059669';
-                    btn.textContent = '✓ تم الإرسال';
-                })
-                .catch(err => {
-                    status.textContent = '❌ فشل الإرسال. تحقق من الإعدادات.';
-                    status.style.color = '#dc2626';
-                    btn.disabled = false;
-                    btn.textContent = '📧 إعادة المحاولة';
-                    console.error('EmailJS Error:', err);
-                });
+    },
+    {
+        ar: {
+            q: 'ما هي طريقة متوازي الأضلاع (Parallelogram Method) لجمع المتجهات؟',
+            options: [
+                'نضع المتجهين من نفس نقطة البداية ونكمل متوازي الأضلاع، والمتجه الناتج هو القطر',
+                'نضع ذيل المتجه الثاني عند رأس الأول',
+                'نضرب المتجهين في بعضهما',
+                'نجمع مقادير المتجهين فقط'
+            ],
+            correct: 0,
+            explain: 'في طريقة متوازي الأضلاع: نضع المتجهين من نفس نقطة البداية، نكمل متوازي الأضلاع، والمتجه الناتج هو القطر من نقطة البداية.'
+        },
+        en: {
+            q: 'What is the Parallelogram Method for adding vectors?',
+            options: [
+                'Place both vectors from the same starting point, complete the parallelogram, and the resultant is the diagonal',
+                'Place the tail of the second vector at the head of the first',
+                'Multiply the vectors together',
+                'Add only the magnitudes of the vectors'
+            ],
+            correct: 0,
+            explain: 'In the Parallelogram Method: place both vectors from the same starting point, complete the parallelogram, and the resultant is the diagonal from the starting point.'
         }
+    },
+    {
+        ar: {
+            q: 'عند ضرب متجه في عدد قياسي موجب (k > 0)، ماذا يحدث؟',
+            options: [
+                'يتغير اتجاه المتجه فقط',
+                'يتغير مقدار المتجه فقط ويبقى الاتجاه كما هو',
+                'يتغير كل من المقدار والاتجاه',
+                'لا يتغير شيء'
+            ],
+            correct: 1,
+            explain: 'عند ضرب متجه في عدد قياسي موجب (k > 0): يتغير مقدار المتجه فقط ويبقى الاتجاه كما هو. إذا كان k > 1 يتمدد المتجه، وإذا كان 0 < k < 1 ينضغط المتجه.'
+        },
+        en: {
+            q: 'When multiplying a vector by a positive scalar (k > 0), what happens?',
+            options: [
+                'Only the direction changes',
+                'Only the magnitude changes and the direction remains the same',
+                'Both magnitude and direction change',
+                'Nothing changes'
+            ],
+            correct: 1,
+            explain: 'When multiplying a vector by a positive scalar (k > 0): only the magnitude changes and the direction remains the same. If k > 1 the vector stretches, if 0 < k < 1 the vector compresses.'
+        }
+    },
+    {
+        ar: {
+            q: 'عند ضرب متجه في عدد قياسي سالب (k < 0)، ماذا يحدث؟',
+            options: [
+                'يتغير المقدار فقط ويبقى الاتجاه كما هو',
+                'يتغير الاتجاه فقط ويبقى المقدار كما هو',
+                'يتغير كل من المقدار والاتجاه (ينعكس الاتجاه)',
+                'لا يتغير شيء'
+            ],
+            correct: 2,
+            explain: 'عند ضرب متجه في عدد قياسي سالب (k < 0): يتغير كل من المقدار والاتجاه. ينعكس اتجاه المتجه (يصبح معاكساً للاتجاه الأصلي).'
+        },
+        en: {
+            q: 'When multiplying a vector by a negative scalar (k < 0), what happens?',
+            options: [
+                'Only the magnitude changes and direction remains the same',
+                'Only the direction changes and magnitude remains the same',
+                'Both magnitude and direction change (direction is reversed)',
+                'Nothing changes'
+            ],
+            correct: 2,
+            explain: 'When multiplying a vector by a negative scalar (k < 0): both magnitude and direction change. The direction of the vector is reversed (becomes opposite to the original direction).'
+        }
+    },
+    {
+        ar: {
+            q: 'ما هي خاصية التبديل (Commutative Property) في جمع المتجهات؟',
+            options: [
+                'a + b = b + a',
+                '(a + b) + c = a + (b + c)',
+                'k(a + b) = ka + kb',
+                'a · b = b · a'
+            ],
+            correct: 0,
+            explain: 'خاصية التبديل في جمع المتجهات: a + b = b + a. ترتيب جمع المتجهات لا يؤثر على الناتج.'
+        },
+        en: {
+            q: 'What is the Commutative Property in vector addition?',
+            options: [
+                'a + b = b + a',
+                '(a + b) + c = a + (b + c)',
+                'k(a + b) = ka + kb',
+                'a · b = b · a'
+            ],
+            correct: 0,
+            explain: 'Commutative Property in vector addition: a + b = b + a. The order of adding vectors does not affect the result.'
+        }
+    },
+    {
+        ar: {
+            q: 'ما هي خاصية التجميع (Associative Property) في جمع المتجهات؟',
+            options: [
+                'a + b = b + a',
+                '(a + b) + c = a + (b + c)',
+                'k(a + b) = ka + kb',
+                'a + 0 = a'
+            ],
+            correct: 1,
+            explain: 'خاصية التجميع في جمع المتجهات: (a + b) + c = a + (b + c). طريقة تجميع المتجهات لا تؤثر على الناتج.'
+        },
+        en: {
+            q: 'What is the Associative Property in vector addition?',
+            options: [
+                'a + b = b + a',
+                '(a + b) + c = a + (b + c)',
+                'k(a + b) = ka + kb',
+                'a + 0 = a'
+            ],
+            correct: 1,
+            explain: 'Associative Property in vector addition: (a + b) + c = a + (b + c). The way vectors are grouped does not affect the result.'
+        }
+    },
+    {
+        ar: {
+            q: 'ما هي خاصية التوزيع (Distributive Property) في ضرب المتجهات في عدد قياسي؟',
+            options: [
+                'a + b = b + a',
+                '(a + b) + c = a + (b + c)',
+                'k(a + b) = ka + kb',
+                'a · b = b · a'
+            ],
+            correct: 2,
+            explain: 'خاصية التوزيع في ضرب المتجهات في عدد قياسي: k(a + b) = ka + kb. العدد القياسي يوزع على كل متجه على حدة.'
+        },
+        en: {
+            q: 'What is the Distributive Property in scalar multiplication of vectors?',
+            options: [
+                'a + b = b + a',
+                '(a + b) + c = a + (b + c)',
+                'k(a + b) = ka + kb',
+                'a · b = b · a'
+            ],
+            correct: 2,
+            explain: 'Distributive Property in scalar multiplication of vectors: k(a + b) = ka + kb. The scalar distributes to each vector separately.'
+        }
+    },
+    {
+        ar: {
+            q: 'ما هي المتجهات المتكافئة (Equivalent Vectors)؟',
+            options: [
+                'متجهات لها نفس نقطة البداية فقط',
+                'متجهات لها نفس المقدار ونفس الاتجاه',
+                'متجهات لها نفس المقدار ولكن اتجاهات مختلفة',
+                'متجهات متعاكسة في الاتجاه'
+            ],
+            correct: 1,
+            explain: 'المتجهات المتكافئة: متجهات لها نفس المقدار ونفس الاتجاه، بغض النظر عن نقطة البداية.'
+        },
+        en: {
+            q: 'What are Equivalent Vectors?',
+            options: [
+                'Vectors with the same starting point only',
+                'Vectors with the same magnitude and same direction',
+                'Vectors with the same magnitude but different directions',
+                'Vectors with opposite directions'
+            ],
+            correct: 1,
+            explain: 'Equivalent Vectors: vectors with the same magnitude and same direction, regardless of the starting point.'
+        }
+    },
+    {
+        ar: {
+            q: 'ما هي المتجهات المتعاكسة (Opposite Vectors)؟',
+            options: [
+                'متجهات لها نفس المقدار ونفس الاتجاه',
+                'متجهات لها نفس المقدار ولكن اتجاهان متعاكسان',
+                'متجهات لها مقادير مختلفة',
+                'متجهات متعامدة'
+            ],
+            correct: 1,
+            explain: 'المتجهات المتعاكسة: متجهات لها نفس المقدار ولكن اتجاهان متعاكسان. إذا كان a متجه، فإن -a هو المتجه المعاكس له.'
+        },
+        en: {
+            q: 'What are Opposite Vectors?',
+            options: [
+                'Vectors with the same magnitude and same direction',
+                'Vectors with the same magnitude but opposite directions',
+                'Vectors with different magnitudes',
+                'Perpendicular vectors'
+            ],
+            correct: 1,
+            explain: 'Opposite Vectors: vectors with the same magnitude but opposite directions. If a is a vector, then -a is its opposite vector.'
+        }
+    },
+    {
+        ar: {
+            q: 'إذا كان المتجه a له مقدار 10 واتجاه 30°، ما هو مقدار المتجه -a؟',
+            options: [
+                '5',
+                '10',
+                '-10',
+                'لا يمكن تحديده'
+            ],
+            correct: 1,
+            explain: 'المتجه -a له نفس مقدار المتجه a (وهو 10) ولكن اتجاه معاكس (30° + 180° = 210°). المقدار لا يتغير عند ضرب المتجه في -1.'
+        },
+        en: {
+            q: 'If vector a has magnitude 10 and direction 30°, what is the magnitude of vector -a?',
+            options: [
+                '5',
+                '10',
+                '-10',
+                'Cannot be determined'
+            ],
+            correct: 1,
+            explain: 'Vector -a has the same magnitude as vector a (which is 10) but opposite direction (30° + 180° = 210°). The magnitude does not change when multiplying the vector by -1.'
+        }
+    },
+    {
+        ar: {
+            q: 'في مسألة السرعة: إذا تحركت سيارة بسرعة 60 كم/س باتجاه الشرق، ما هو المتجه الذي يمثل سرعتها؟',
+            options: [
+                '60 كم/س شرقاً',
+                '60 كم/س غرباً',
+                '60 كم/س شمالاً',
+                '60 كم/س جنوباً'
+            ],
+            correct: 0,
+            explain: 'السرعة مقدار متجه، لذلك يجب تحديد المقدار (60 كم/س) والاتجاه (شرقاً).'
+        },
+        en: {
+            q: 'In a velocity problem: if a car moves at 60 km/h eastward, what is the vector representing its velocity?',
+            options: [
+                '60 km/h eastward',
+                '60 km/h westward',
+                '60 km/h northward',
+                '60 km/h southward'
+            ],
+            correct: 0,
+            explain: 'Velocity is a vector quantity, so we must specify the magnitude (60 km/h) and the direction (eastward).'
+        }
+    },
+    {
+        ar: {
+            q: 'إذا كان |a| = 5 و |b| = 12، ما هو أكبر قيمة ممكنة لـ |a + b|؟',
+            options: [
+                '7',
+                '17',
+                '60',
+                'لا يمكن تحديدها'
+            ],
+            correct: 1,
+            explain: 'أكبر قيمة لـ |a + b| تحدث عندما يكون المتجهان في نفس الاتجاه، وعندها |a + b| = |a| + |b| = 5 + 12 = 17.'
+        },
+        en: {
+            q: 'If |a| = 5 and |b| = 12, what is the maximum possible value of |a + b|?',
+            options: [
+                '7',
+                '17',
+                '60',
+                'Cannot be determined'
+            ],
+            correct: 1,
+            explain: 'The maximum value of |a + b| occurs when the vectors are in the same direction, then |a + b| = |a| + |b| = 5 + 12 = 17.'
+        }
+    },
+    {
+        ar: {
+            q: 'في مسألة القوة: إذا أثرت قوة مقدارها 120 N بزاوية 30° مع المحور الأفقي، ما هي المركبة الأفقية للقوة؟',
+            options: [
+                '60 N',
+                '120 N',
+                '60√3 N ≈ 103.9 N',
+                '120√3 N ≈ 207.8 N'
+            ],
+            correct: 2,
+            explain: 'المركبة الأفقية = |F| cos θ = 120 × cos 30° = 120 × (√3/2) = 60√3 ≈ 103.9 N.'
+        },
+        en: {
+            q: 'In a force problem: if a force of 120 N acts at 30° with the horizontal, what is the horizontal component of the force?',
+            options: [
+                '60 N',
+                '120 N',
+                '60√3 N ≈ 103.9 N',
+                '120√3 N ≈ 207.8 N'
+            ],
+            correct: 2,
+            explain: 'Horizontal component = |F| cos θ = 120 × cos 30° = 120 × (√3/2) = 60√3 ≈ 103.9 N.'
+        }
+    },
+    {
+        ar: {
+            q: 'ما هو المتجه الناتج عن جمع متجهين متعاكسين؟',
+            options: [
+                'متجه له نفس المقدار',
+                'المتجه الصفري (صفر)',
+                'متجه له ضعف المقدار',
+                'لا يمكن تحديده'
+            ],
+            correct: 1,
+            explain: 'مجموع متجهين متعاكسين = المتجه الصفري (صفر). لأن a + (-a) = 0.'
+        },
+        en: {
+            q: 'What is the resultant of adding two opposite vectors?',
+            options: [
+                'A vector with the same magnitude',
+                'The zero vector (zero)',
+                'A vector with double the magnitude',
+                'Cannot be determined'
+            ],
+            correct: 1,
+            explain: 'The sum of two opposite vectors = the zero vector (zero). Because a + (-a) = 0.'
+        }
+    },
+    {
+        ar: {
+            q: 'في مسألة الإزاحة: إذا تحركت سفينة 80 كم شرقاً ثم 120 كم شمالاً، ما هي المسافة الكلية (مقدار الإزاحة)؟',
+            options: [
+                '200 كم',
+                '√(80² + 120²) = √20800 ≈ 144.2 كم',
+                '40 كم',
+                '20000 كم²'
+            ],
+            correct: 1,
+            explain: 'الإزاحة = √(80² + 120²) = √(6400 + 14400) = √20800 ≈ 144.2 كم. نستخدم نظرية فيثاغورس لأن الحركتين متعامدتين.'
+        },
+        en: {
+            q: 'In a displacement problem: if a ship moves 80 km east then 120 km north, what is the total distance (magnitude of displacement)?',
+            options: [
+                '200 km',
+                '√(80² + 120²) = √20800 ≈ 144.2 km',
+                '40 km',
+                '20000 km²'
+            ],
+            correct: 1,
+            explain: 'Displacement = √(80² + 120²) = √(6400 + 14400) = √20800 ≈ 144.2 km. We use the Pythagorean theorem because the two movements are perpendicular.'
+        }
+    },
+    {
+        ar: {
+            q: 'إذا كان a = c، ماذا يمكن أن نستنتج عن المتجهين a و b إذا كان a + b = a + c؟',
+            options: [
+                'a = b',
+                'b = c',
+                'a = b = c',
+                'لا يمكن الاستنتاج'
+            ],
+            correct: 1,
+            explain: 'إذا كان a + b = a + c، وبما أن a = c، فإن a + b = a + a = 2a، وبالتالي b = a = c.'
+        },
+        en: {
+            q: 'If a = c, what can we conclude about vectors a and b if a + b = a + c?',
+            options: [
+                'a = b',
+                'b = c',
+                'a = b = c',
+                'Cannot conclude'
+            ],
+            correct: 1,
+            explain: 'If a + b = a + c, and since a = c, then a + b = a + a = 2a, therefore b = a = c.'
+        }
+    },
+    {
+        ar: {
+            q: 'ما هو الفرق بين المتجهات المتكافئة والمتجهات المتساوية؟',
+            options: [
+                'لا يوجد فرق، هما نفس الشيء',
+                'المتجهات المتكافئة لها نفس المقدار والاتجاه ولكن قد تكون نقاط البداية مختلفة، بينما المتجهات المتساوية لها نفس نقطة البداية أيضاً',
+                'المتجهات المتساوية لها نفس المقدار فقط',
+                'المتجهات المتكافئة لها مقادير مختلفة'
+            ],
+            correct: 1,
+            explain: 'المتجهات المتكافئة: لها نفس المقدار والاتجاه ولكن قد تكون في مواقع مختلفة. المتجهات المتساوية: لها نفس المقدار والاتجاه ونفس نقطة البداية (هي نفسها تماماً).'
+        },
+        en: {
+            q: 'What is the difference between equivalent vectors and equal vectors?',
+            options: [
+                'There is no difference, they are the same',
+                'Equivalent vectors have the same magnitude and direction but may have different starting points, while equal vectors have the same starting point too',
+                'Equal vectors have the same magnitude only',
+                'Equivalent vectors have different magnitudes'
+            ],
+            correct: 1,
+            explain: 'Equivalent vectors: have the same magnitude and direction but may be at different locations. Equal vectors: have the same magnitude, direction, and starting point (they are exactly the same).'
+        }
+    },
+    {
+        ar: {
+            q: 'في مسألة القوة: إذا أثرت قوتان مقدار كل منهما 100 N بزاويتين 30° و 120° مع المحور الأفقي، ما هو مقدار القوة المحصلة؟',
+            options: [
+                '200 N',
+                '100 N',
+                '100√3 N ≈ 173.2 N',
+                '50 N'
+            ],
+            correct: 2,
+            explain: 'نستخدم قانون جمع المتجهات: |R|² = |F₁|² + |F₂|² + 2|F₁||F₂|cos(θ₂ - θ₁) = 100² + 100² + 2(100)(100)cos(120° - 30°) = 10000 + 10000 + 20000cos(90°) = 20000 + 0 = 20000، إذن |R| = √20000 = 100√2 ≈ 141.4 N. لكن إذا كانت الزاويتان 30° و 120°، فإن الزاوية بينهما 90°، والمحصلة = √(100² + 100²) = 100√2 ≈ 141.4 N. لكن إذا كانت الزاويتان 30° و 150°، فإن الزاوية بينهما 120°، والمحصلة = √(100² + 100² + 2(100)(100)cos120°) = √(10000 + 10000 - 10000) = √10000 = 100 N. الإجابة الصحيحة تعتمد على الزاوية بين القوتين.'
+        },
+        en: {
+            q: 'In a force problem: if two forces of 100 N each act at angles 30° and 120° with the horizontal, what is the magnitude of the resultant force?',
+            options: [
+                '200 N',
+                '100 N',
+                '100√3 N ≈ 173.2 N',
+                '50 N'
+            ],
+            correct: 2,
+            explain: 'We use the vector addition formula: |R|² = |F₁|² + |F₂|² + 2|F₁||F₂|cos(θ₂ - θ₁). The answer depends on the angle between the two forces.'
+        }
+    }
+];
 
-        window.addEventListener('DOMContentLoaded', startTimer);
-    </script>
+// ==================== STATE ====================
+let currentQuestion = 0;
+let answers = [];
+let timeLeft = 3600;
+let timerInterval;
+let startTime;
+let currentLang = 'ar';
+
+// ==================== LANGUAGE ====================
+function setLanguage(lang) {
+    currentLang = lang;
+    if (lang === 'en') {
+        document.body.classList.add('en-mode');
+        document.getElementById('btn-en').classList.add('active');
+        document.getElementById('btn-ar').classList.remove('active');
+    } else {
+        document.body.classList.remove('en-mode');
+        document.getElementById('btn-ar').classList.add('active');
+        document.getElementById('btn-en').classList.remove('active');
+    }
+    if (!document.getElementById('examContainer').classList.contains('hidden')) {
+        showQuestion();
+    }
+}
+
+// ==================== START EXAM ====================
+function startExam() {
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('examContainer').classList.remove('hidden');
+    startTime = new Date();
+    startTimer();
+    showQuestion();
+}
+
+// ==================== TIMER ====================
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            submitExam();
+        }
+    }, 1000);
+}
+
+// ==================== SHOW QUESTION ====================
+function showQuestion() {
+    const q = questions[currentQuestion];
+    const qData = q[currentLang];
+    const progress = ((currentQuestion + 1) / questions.length) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    
+    const container = document.getElementById('examContainer');
+    container.innerHTML = `
+        <div class="fade-in bg-white rounded-3xl p-8 shadow-xl">
+            <div class="flex justify-between items-center mb-6">
+                <div class="text-sm font-bold text-indigo-600">
+                    <span class="ar-text">السؤال ${currentQuestion + 1} من ${questions.length}</span>
+                    <span class="en-text">Question ${currentQuestion + 1} of ${questions.length}</span>
+                </div>
+                <div class="text-sm font-bold text-purple-600">
+                    <span class="ar-text">التقدم: ${Math.round(progress)}%</span>
+                    <span class="en-text">Progress: ${Math.round(progress)}%</span>
+                </div>
+            </div>
+            
+            <h3 class="text-xl font-bold mb-6">
+                <span class="ar-text">${qData.q}</span>
+                <span class="en-text">${qData.q}</span>
+            </h3>
+            
+            <div class="space-y-3">
+                ${qData.options.map((opt, idx) => `
+                    <label class="block p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-500 cursor-pointer transition ${answers[currentQuestion] === idx ? 'border-indigo-500 bg-indigo-50' : ''}">
+                        <input type="radio" name="q${currentQuestion}" value="${idx}" class="hidden" ${answers[currentQuestion] === idx ? 'checked' : ''} onchange="selectAnswer(${idx})">
+                        <span class="ar-text">${opt}</span>
+                        <span class="en-text">${opt}</span>
+                    </label>
+                `).join('')}
+            </div>
+            
+            <div class="flex justify-between mt-8">
+                <button onclick="prevQuestion()" ${currentQuestion === 0 ? 'disabled class="opacity-50 cursor-not-allowed"' : ''} class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-xl font-bold transition">
+                    <span class="ar-text">← السابق</span>
+                    <span class="en-text">← Previous</span>
+                </button>
+                <button onclick="nextQuestion()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-bold transition">
+                    <span class="ar-text">${currentQuestion === questions.length - 1 ? 'إنهاء ✓' : 'التالي →'}</span>
+                    <span class="en-text">${currentQuestion === questions.length - 1 ? 'Finish ✓' : 'Next →'}</span>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// ==================== SELECT ANSWER ====================
+function selectAnswer(idx) {
+    answers[currentQuestion] = idx;
+    showQuestion();
+}
+
+// ==================== NEXT/PREV ====================
+function nextQuestion() {
+    if (answers[currentQuestion] === undefined) {
+        alert(currentLang === 'ar' ? 'الرجاء اختيار إجابة' : 'Please select an answer');
+        return;
+    }
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        showQuestion();
+    } else {
+        submitExam();
+    }
+}
+
+function prevQuestion() {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion();
+    }
+}
+
+// ==================== SUBMIT EXAM ====================
+function submitExam() {
+    clearInterval(timerInterval);
+    document.getElementById('examContainer').classList.add('hidden');
+    document.getElementById('resultsScreen').classList.remove('hidden');
+    
+    let correct = 0;
+    answers.forEach((ans, idx) => {
+        if (ans === questions[idx].correct) correct++;
+    });
+    
+    const percentage = Math.round((correct / questions.length) * 100);
+    document.getElementById('finalScore').textContent = percentage + '%';
+    document.getElementById('correctCount').textContent = `${correct}/${questions.length}`;
+    
+    const timeTaken = Math.floor((new Date() - startTime) / 1000);
+    const minutes = Math.floor(timeTaken / 60);
+    const seconds = timeTaken % 60;
+    document.getElementById('timeTaken').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    // Result icon and title
+    if (percentage >= 90) {
+        document.getElementById('resultIcon').textContent = '🏆';
+        document.getElementById('resultTitle').innerHTML = currentLang === 'ar' ? 
+            '<span class="ar-text">ممتاز! 🏆</span><span class="en-text">Excellent! 🏆</span>' :
+            '<span class="ar-text">ممتاز! 🏆</span><span class="en-text">Excellent! 🏆</span>';
+    } else if (percentage >= 75) {
+        document.getElementById('resultIcon').textContent = '🎉';
+        document.getElementById('resultTitle').innerHTML = currentLang === 'ar' ? 
+            '<span class="ar-text">جيد جداً! 🎉</span><span class="en-text">Very Good! 🎉</span>' :
+            '<span class="ar-text">جيد جداً! 🎉</span><span class="en-text">Very Good! 🎉</span>';
+    } else if (percentage >= 50) {
+        document.getElementById('resultIcon').textContent = '👍';
+        document.getElementById('resultTitle').innerHTML = currentLang === 'ar' ? 
+            '<span class="ar-text">جيد 👍</span><span class="en-text">Good 👍</span>' :
+            '<span class="ar-text">جيد 👍</span><span class="en-text">Good 👍</span>';
+    } else {
+        document.getElementById('resultIcon').textContent = '📚';
+        document.getElementById('resultTitle').innerHTML = currentLang === 'ar' ? 
+            '<span class="ar-text">حاول مرة أخرى 📚</span><span class="en-text">Try Again 📚</span>' :
+            '<span class="ar-text">حاول مرة أخرى 📚</span><span class="en-text">Try Again 📚</span>';
+    }
+    
+    // Detailed results
+    let detailedHTML = '<div class="space-y-4">';
+    questions.forEach((q, idx) => {
+        const qData = q[currentLang];
+        const isCorrect = answers[idx] === q.correct;
+        detailedHTML += `
+            <div class="bg-white rounded-xl p-4 border-2 ${isCorrect ? 'border-green-500' : 'border-red-500'}">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl">${isCorrect ? '✅' : '❌'}</span>
+                    <div class="flex-1">
+                        <p class="font-bold mb-2">
+                            <span class="ar-text">${idx + 1}. ${qData.q}</span>
+                            <span class="en-text">${idx + 1}. ${qData.q}</span>
+                        </p>
+                        <p class="text-sm ${isCorrect ? 'text-green-600' : 'text-red-600'}">
+                            <span class="ar-text">إجابتك: ${qData.options[answers[idx]]}</span>
+                            <span class="en-text">Your answer: ${qData.options[answers[idx]]}</span>
+                        </p>
+                        ${!isCorrect ? `
+                            <p class="text-sm text-green-600 mt-1">
+                                <span class="ar-text">الإجابة الصحيحة: ${qData.options[q.correct]}</span>
+                                <span class="en-text">Correct answer: ${qData.options[q.correct]}</span>
+                            </p>
+                        ` : ''}
+                        <p class="text-xs text-gray-500 mt-2">
+                            <span class="ar-text">${qData.explain}</span>
+                            <span class="en-text">${qData.explain}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    detailedHTML += '</div>';
+    document.getElementById('detailedResults').innerHTML = detailedHTML;
+}
+
+// ==================== EMAIL RESULTS ====================
+function emailResults() {
+    emailjs.init("Rb3Lq8tXaFmc5YHUH");
+    
+    let correct = 0;
+    answers.forEach((ans, idx) => {
+        if (ans === questions[idx].correct) correct++;
+    });
+    
+    const percentage = Math.round((correct / questions.length) * 100);
+    const timeTaken = Math.floor((new Date() - startTime) / 1000);
+    const minutes = Math.floor(timeTaken / 60);
+    const seconds = timeTaken % 60;
+    
+    let resultsText = currentLang === 'ar' ? 
+        `نتيجة امتحان المتجهات:\n\n` :
+        `Vectors Exam Result:\n\n`;
+    
+    resultsText += currentLang === 'ar' ?
+        `الدرجة: ${percentage}%\n` :
+        `Score: ${percentage}%\n`;
+    
+    resultsText += currentLang === 'ar' ?
+        `الإجابات الصحيحة: ${correct}/${questions.length}\n` :
+        `Correct answers: ${correct}/${questions.length}\n`;
+    
+    resultsText += currentLang === 'ar' ?
+        `الوقت: ${minutes}:${seconds.toString().padStart(2, '0')}\n\n` :
+        `Time: ${minutes}:${seconds.toString().padStart(2, '0')}\n\n`;
+    
+    resultsText += currentLang === 'ar' ? 'التفاصيل:\n' : 'Details:\n';
+    
+    questions.forEach((q, idx) => {
+        const qData = q[currentLang];
+        const isCorrect = answers[idx] === q.correct;
+        resultsText += `${idx + 1}. ${isCorrect ? '✅' : '❌'} ${qData.q}\n`;
+        if (!isCorrect) {
+            resultsText += currentLang === 'ar' ?
+                `   إجابتك: ${qData.options[answers[idx]]}\n   الإجابة الصحيحة: ${qData.options[q.correct]}\n\n` :
+                `   Your answer: ${qData.options[answers[idx]]}\n   Correct answer: ${qData.options[q.correct]}\n\n`;
+        }
+    });
+    
+    emailjs.send("service_w15m64i", "template_5b0u2tq", {
+        to_email: "mohammedhesham872@gmail.com",
+        message: resultsText,
+        subject: currentLang === 'ar' ? 
+            `نتيجة امتحان المتجهات - ${percentage}%` :
+            `Vectors Exam Result - ${percentage}%`
+    }).then(() => {
+        alert(currentLang === 'ar' ? 'تم إرسال النتيجة بنجاح!' : 'Result sent successfully!');
+    }).catch((error) => {
+        alert(currentLang === 'ar' ? 'فشل إرسال النتيجة: ' + error.text : 'Failed to send result: ' + error.text);
+    });
+}
+</script>
+
 </body>
 </html>
